@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handback — Reuniting people with their belongings</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #0F6E56;
+    --green-deep: #085041;
+    --red-light: #FCEBEB;
+    --red: #E24B4A;
+    --red-dark: #A32D2D;
+    --purple-light: #EEEDFE;
+    --purple: #7F77DD;
+    --purple-dark: #3C3489;
+    --amber-light: #FAEEDA;
+    --amber-dark: #633806;
+    --ink: #1a1a18;
+    --ink-muted: #4a4a45;
+    --ink-faint: #8a8a82;
+    --surface: #fafaf7;
+    --surface-2: #f2f2ee;
+    --border: rgba(26,26,24,0.1);
+    --border-strong: rgba(26,26,24,0.2);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 64px;
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 22px; color: var(--ink); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); display: inline-block;
+  }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a {
+    font-size: 14px; color: var(--ink-muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta {
+    background: var(--green); color: #fff;
+    padding: 9px 20px; border-radius: 100px;
+    font-size: 14px; font-weight: 500; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--green-dark); }
+
+  /* ── PAGE SECTIONS ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 40px 60px;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-light); color: var(--green-deep);
+    font-size: 12px; font-weight: 500; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 20px;
+  }
+  .hero-tag .pulse {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 52px; line-height: 1.1;
+    color: var(--ink); margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--green); }
+  .hero-sub {
+    font-size: 17px; color: var(--ink-muted);
+    line-height: 1.7; margin-bottom: 32px; max-width: 420px;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green); color: #fff;
+    padding: 12px 24px; border-radius: 100px;
+    font-size: 15px; font-weight: 500; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-family: var(--sans);
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-outline {
+    background: transparent; color: var(--ink);
+    padding: 12px 24px; border-radius: 100px;
+    font-size: 15px; font-weight: 500;
+    border: 1px solid var(--border-strong); cursor: pointer;
+    transition: background 0.2s; font-family: var(--sans);
+  }
+  .btn-outline:hover { background: var(--surface-2); }
+
+  .hero-visual {
+    background: var(--surface-2);
+    border-radius: 20px; border: 0.5px solid var(--border);
+    padding: 24px; display: flex; flex-direction: column; gap: 12px;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hero-card {
+    background: #fff; border-radius: var(--radius);
+    border: 0.5px solid var(--border); padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-card-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .hero-card-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .hero-card-meta { font-size: 12px; color: var(--ink-faint); }
+  .badge-sm {
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; margin-left: auto; flex-shrink: 0;
+  }
+  .badge-found { background: var(--green-light); color: var(--green-deep); }
+  .badge-lost { background: var(--red-light); color: var(--red-dark); }
+  .badge-match { background: var(--purple-light); color: var(--purple-dark); }
+
+  /* ── STATS ── */
+  .stats {
+    border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border);
+    padding: 28px 40px;
+    display: flex; justify-content: center; gap: 80px;
+  }
+  .stat-num {
+    font-family: var(--serif); font-size: 36px; color: var(--green);
+    margin-bottom: 2px;
+  }
+  .stat-label { font-size: 13px; color: var(--ink-faint); }
+
+  /* ── SEARCH BAR ── */
+  .search-section {
+    padding: 48px 40px 0; max-width: 1100px; margin: 0 auto;
+  }
+  .search-section h2 {
+    font-family: var(--serif); font-size: 32px;
+    margin-bottom: 20px; color: var(--ink);
+  }
+  .search-bar {
+    display: flex; gap: 8px; align-items: center;
+    background: #fff; border: 1px solid var(--border-strong);
+    border-radius: 100px; padding: 6px 6px 6px 20px;
+    margin-bottom: 16px; max-width: 700px;
+  }
+  .search-bar input, .search-bar select {
+    border: none; background: transparent; outline: none;
+    font-family: var(--sans); font-size: 14px; color: var(--ink);
+  }
+  .search-bar input { flex: 1; }
+  .search-bar select { color: var(--ink-faint); }
+  .search-bar .search-btn {
+    background: var(--green); color: #fff; border: none;
+    padding: 9px 22px; border-radius: 100px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: var(--sans); transition: background 0.2s;
+  }
+  .search-bar .search-btn:hover { background: var(--green-dark); }
+
+  .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+  .chip {
+    font-size: 12px; padding: 5px 14px; border-radius: 100px;
+    border: 0.5px solid var(--border-strong); background: transparent;
+    color: var(--ink-muted); cursor: pointer; transition: all 0.15s;
+    font-family: var(--sans);
+  }
+  .chip.on { background: var(--green); color: #fff; border-color: var(--green); }
+
+  /* ── LISTINGS GRID ── */
+  .listings-section {
+    padding: 0 40px 60px; max-width: 1100px; margin: 0 auto;
+  }
+  .listings-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .listing-card {
+    background: #fff; border: 0.5px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s; cursor: pointer;
+  }
+  .listing-card:hover { border-color: var(--green); transform: translateY(-2px); }
+  .listing-card.matched { border: 1.5px solid var(--green); }
+  .listing-img {
+    height: 120px; display: flex; align-items: center;
+    justify-content: center; font-size: 48px;
+  }
+  .listing-body { padding: 14px 16px; }
+  .listing-badges { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .listing-title {
+    font-size: 15px; font-weight: 500; color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .listing-desc {
+    font-size: 13px; color: var(--ink-muted);
+    line-height: 1.5; margin-bottom: 10px;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .listing-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 0.5px solid var(--border); padding-top: 10px;
+  }
+  .listing-meta { font-size: 12px; color: var(--ink-faint); }
+  .listing-cta {
+    font-size: 12px; font-weight: 500; color: var(--green);
+    background: var(--green-light); padding: 5px 12px;
+    border-radius: 100px; border: none; cursor: pointer;
+    font-family: var(--sans); transition: background 0.2s;
+  }
+  .listing-cta:hover { background: #c5eadf; }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    background: var(--surface-2); border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: 64px 40px;
+  }
+  .how-inner { max-width: 1100px; margin: 0 auto; }
+  .how-inner h2 {
+    font-family: var(--serif); font-size: 36px;
+    text-align: center; margin-bottom: 48px; color: var(--ink);
+  }
+  .steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .step {
+    background: #fff; border-radius: var(--radius);
+    border: 0.5px solid var(--border); padding: 28px 24px;
+    position: relative;
+  }
+  .step-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green); color: #fff;
+    font-family: var(--serif); font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .step h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; color: var(--ink); }
+  .step p { font-size: 14px; color: var(--ink-muted); line-height: 1.6; }
+
+  /* ── REPORT FORM PAGE ── */
+  .form-page { max-width: 640px; margin: 0 auto; padding: 48px 40px 80px; }
+  .form-page h1 {
+    font-family: var(--serif); font-size: 36px;
+    margin-bottom: 6px; color: var(--ink);
+  }
+  .form-page .form-sub { font-size: 15px; color: var(--ink-muted); margin-bottom: 32px; }
+
+  .type-toggle {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px;
+  }
+  .type-btn {
+    padding: 20px; border-radius: var(--radius);
+    border: 1.5px solid var(--border); background: #fff;
+    cursor: pointer; text-align: center; transition: all 0.2s;
+    font-family: var(--sans);
+  }
+  .type-btn:hover { border-color: var(--green); }
+  .type-btn.on { border-color: var(--green); background: var(--green-light); }
+  .type-btn .type-icon { font-size: 28px; margin-bottom: 6px; }
+  .type-btn .type-label { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .type-btn .type-sub { font-size: 12px; color: var(--ink-faint); }
+
+  .progress-bar { display: flex; gap: 4px; margin-bottom: 28px; }
+  .prog { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+  .prog.done { background: var(--green); }
+  .prog.current { background: var(--green); opacity: 0.4; }
+
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block; font-size: 13px; font-weight: 500;
+    color: var(--ink-muted); margin-bottom: 6px;
+  }
+  .field label .req { color: var(--red); }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 11px 14px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+    font-family: var(--sans); font-size: 14px; color: var(--ink);
+    background: #fff; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--green);
+  }
+  .field textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .field-hint { font-size: 12px; color: var(--ink-faint); margin-top: 5px; }
+
+  .upload-area {
+    border: 1.5px dashed var(--border-strong); border-radius: var(--radius);
+    padding: 28px; text-align: center; cursor: pointer;
+    background: var(--surface-2); transition: border-color 0.2s;
+  }
+  .upload-area:hover { border-color: var(--green); }
+  .upload-area p { font-size: 14px; color: var(--ink-muted); margin-top: 6px; }
+  .upload-area span { font-size: 12px; color: var(--ink-faint); }
+
+  .contact-opts { display: flex; gap: 8px; margin-bottom: 8px; }
+  .contact-opt {
+    flex: 1; padding: 10px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong); background: #fff;
+    text-align: center; font-size: 13px; font-weight: 500;
+    color: var(--ink-muted); cursor: pointer; transition: all 0.15s;
+    font-family: var(--sans);
+  }
+  .contact-opt.on { border-color: var(--green); background: var(--green-light); color: var(--green-deep); }
+
+  .reward-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .toggle-wrap {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: var(--border-strong); cursor: pointer; position: relative;
+    transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle-wrap.on { background: var(--green); }
+  .toggle-knob {
+    width: 18px; height: 18px; border-radius: 50%; background: #fff;
+    position: absolute; top: 2px; left: 2px; transition: left 0.2s;
+  }
+  .toggle-wrap.on .toggle-knob { left: 20px; }
+  .reward-label { font-size: 14px; color: var(--ink-muted); }
+
+  .tip-box {
+    background: var(--green-light); border-radius: var(--radius-sm);
+    padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .tip-box p { font-size: 13px; color: var(--green-deep); line-height: 1.5; }
+
+  .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+  .btn-back {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--ink-muted); padding: 11px 22px; border-radius: 100px;
+    font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--sans);
+  }
+  .btn-submit {
+    background: var(--green); color: #fff; border: none;
+    padding: 12px 28px; border-radius: 100px;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    font-family: var(--sans); transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--green-dark); }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    text-align: center; padding: 60px 40px;
+    max-width: 480px; margin: 0 auto;
+  }
+  .success-icon-wrap {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--green); display: flex; align-items: center;
+    justify-content: center; margin: 0 auto 24px; font-size: 32px;
+  }
+  .success-screen h2 {
+    font-family: var(--serif); font-size: 32px;
+    color: var(--ink); margin-bottom: 12px;
+  }
+  .success-screen p { font-size: 15px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 28px; }
+
+  /* ── LEGAL PAGES ── */
+  .legal-page { max-width: 700px; margin: 0 auto; padding: 48px 40px 80px; }
+  .legal-page h1 {
+    font-family: var(--serif); font-size: 40px;
+    color: var(--ink); margin-bottom: 6px;
+  }
+  .legal-meta { font-size: 13px; color: var(--ink-faint); margin-bottom: 32px; }
+  .legal-intro {
+    background: var(--green-light); border-radius: var(--radius);
+    padding: 16px 20px; font-size: 14px; color: var(--green-deep);
+    line-height: 1.7; margin-bottom: 36px;
+  }
+  .legal-section { margin-bottom: 28px; }
+  .legal-section h2 {
+    font-size: 16px; font-weight: 500; color: var(--ink);
+    padding-bottom: 8px; border-bottom: 0.5px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .legal-section p { font-size: 14px; color: var(--ink-muted); line-height: 1.8; margin-bottom: 10px; }
+  .legal-list { list-style: none; margin: 8px 0 12px; }
+  .legal-list li {
+    font-size: 14px; color: var(--ink-muted); line-height: 1.7;
+    padding: 4px 0 4px 18px; position: relative;
+  }
+  .legal-list li::before {
+    content: ''; position: absolute; left: 0; top: 13px;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--green);
+  }
+  .legal-highlight {
+    border-left: 3px solid var(--green); padding: 10px 16px;
+    background: var(--green-light); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 12px 0;
+  }
+  .legal-highlight p { font-size: 13px; color: var(--green-deep); margin: 0; }
+  .legal-warn {
+    border-left: 3px solid var(--red); padding: 10px 16px;
+    background: var(--red-light); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 12px 0;
+  }
+  .legal-warn p { font-size: 13px; color: var(--red-dark); margin: 0; }
+  .legal-contact {
+    background: var(--surface-2); border-radius: var(--radius);
+    padding: 18px 22px; margin-top: 28px;
+  }
+  .legal-contact p { font-size: 14px; color: var(--ink-muted); margin-bottom: 4px; }
+  .legal-contact a { color: var(--green); }
+
+  /* ── ABOUT PAGE ── */
+  .about-page { max-width: 800px; margin: 0 auto; padding: 64px 40px 80px; }
+  .about-hero { text-align: center; margin-bottom: 60px; }
+  .about-hero h1 {
+    font-family: var(--serif); font-size: 48px;
+    color: var(--ink); margin-bottom: 16px; line-height: 1.15;
+  }
+  .about-hero h1 em { color: var(--green); font-style: italic; }
+  .about-hero p { font-size: 17px; color: var(--ink-muted); line-height: 1.8; max-width: 560px; margin: 0 auto; }
+  .about-story { margin-bottom: 48px; }
+  .about-story h2 {
+    font-family: var(--serif); font-size: 28px;
+    color: var(--ink); margin-bottom: 16px;
+  }
+  .about-story p { font-size: 15px; color: var(--ink-muted); line-height: 1.8; margin-bottom: 16px; }
+  .about-values {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 48px;
+  }
+  .value-card {
+    background: #fff; border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+  }
+  .value-icon { font-size: 28px; margin-bottom: 12px; }
+  .value-card h3 { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  .value-card p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 0.5px solid var(--border);
+    padding: 32px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-logo { font-family: var(--serif); font-size: 18px; color: var(--ink); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: var(--ink-faint); text-decoration: none; }
+  .footer-links a:hover { color: var(--green); }
+  .footer-copy { font-size: 12px; color: var(--ink-faint); }
+
+  /* ── ITEM DETAIL MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 200;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 20px;
+    width: 100%; max-width: 760px;
+    max-height: 90vh; overflow-y: auto;
+    display: grid; grid-template-columns: 1fr 280px;
+  }
+  .modal-main { padding: 28px; border-right: 0.5px solid var(--border); }
+  .modal-sidebar { padding: 24px; }
+  .modal-close {
+    display: flex; justify-content: flex-end; margin-bottom: 16px;
+  }
+  .close-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: var(--surface-2);
+    font-size: 16px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; color: var(--ink-muted);
+  }
+  .modal-img {
+    height: 160px; border-radius: var(--radius);
+    background: var(--green-light); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 64px; margin-bottom: 16px;
+    border: 0.5px solid var(--border);
+  }
+  .modal-title { font-family: var(--serif); font-size: 24px; color: var(--ink); margin-bottom: 6px; }
+  .modal-posted { font-size: 12px; color: var(--ink-faint); margin-bottom: 16px; }
+  .modal-desc { font-size: 14px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 20px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .detail-cell { background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .detail-cell-label { font-size: 11px; color: var(--ink-faint); margin-bottom: 2px; }
+  .detail-cell-val { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .modal-contact-header { background: var(--green-light); border-radius: var(--radius) var(--radius) 0 0; padding: 14px 16px; }
+  .modal-contact-header h3 { font-size: 15px; font-weight: 500; color: var(--green-deep); margin-bottom: 2px; }
+  .modal-contact-header p { font-size: 12px; color: var(--green-dark); }
+  .modal-contact-body { border: 0.5px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 16px; margin-bottom: 14px; }
+  .poster-row { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .poster-av { width: 36px; height: 36px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: var(--green-deep); flex-shrink: 0; }
+  .poster-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .poster-tag { font-size: 11px; color: var(--ink-faint); }
+  .msg-box { width: 100%; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 10px 12px; font-family: var(--sans); font-size: 13px; color: var(--ink); resize: none; min-height: 80px; outline: none; margin-bottom: 10px; }
+  .msg-box:focus { border-color: var(--green); }
+  .btn-send { width: 100%; background: var(--green); color: #fff; border: none; padding: 11px; border-radius: 100px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--sans); margin-bottom: 8px; }
+  .safety-tips { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px; }
+  .safety-tips p { font-size: 12px; font-weight: 500; color: var(--ink-muted); margin-bottom: 6px; }
+  .safety-tips li { font-size: 11px; color: var(--ink-faint); line-height: 1.6; list-style: none; padding-left: 10px; position: relative; }
+  .safety-tips li::before { content: '·'; position: absolute; left: 0; color: var(--green); }
+  .sent-confirm { background: var(--green-light); border-radius: var(--radius); padding: 20px; text-align: center; display: none; }
+  .sent-confirm.show { display: block; }
+  .sent-confirm h3 { font-size: 15px; font-weight: 500; color: var(--green-deep); margin-bottom: 4px; }
+  .sent-confirm p { font-size: 13px; color: var(--green-dark); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 40px 20px 32px; gap: 32px; }
+    .hero h1 { font-size: 36px; }
+    .hero-visual { display: none; }
+    .stats { gap: 32px; padding: 24px 20px; flex-wrap: wrap; }
+    .search-section, .listings-section { padding-left: 20px; padding-right: 20px; }
+    .listings-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .how-section { padding: 40px 20px; }
+    .form-page { padding: 32px 20px 60px; }
+    .field-row { grid-template-columns: 1fr; }
+    .legal-page, .about-page { padding: 32px 20px 60px; }
+    .about-values { grid-template-columns: 1fr; }
+    .modal { grid-template-columns: 1fr; }
+    .modal-sidebar { border-top: 0.5px solid var(--border); }
+    footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home')">
+    <span class="dot"></span> handback
+  </a>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('home')">Browse listings</a>
+    <a href="#" onclick="showPage('about')">About</a>
+    <a href="#" onclick="showPage('privacy')">Privacy</a>
+    <a href="#" onclick="showPage('terms')">Terms</a>
+  </div>
+  <a class="nav-cta" href="#" onclick="showPage('report')">Report item</a>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <div class="hero-tag">
+        <span class="pulse"></span>
+        Live in Nairobi, Kenya
+      </div>
+      <h1>Reuniting people with their <em>lost</em> belongings</h1>
+      <p class="hero-sub">Post a lost or found item in minutes. Search listings near you. Help your community get back what matters most.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('report')">I lost something</button>
+        <button class="btn-outline" onclick="showPage('report')">I found something</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-icon" style="background:#E1F5EE">👜</div>
+        <div>
+          <div class="hero-card-title">Brown leather wallet</div>
+          <div class="hero-card-meta">Westlands · 2 hrs ago</div>
+        </div>
+        <span class="badge-sm badge-found">Found</span>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-icon" style="background:#FCEBEB">📱</div>
+        <div>
+          <div class="hero-card-title">Samsung Galaxy S23</div>
+          <div class="hero-card-meta">CBD · 5 hrs ago</div>
+        </div>
+        <span class="badge-sm badge-lost">Lost</span>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-icon" style="background:#EEEDFE">🪪</div>
+        <div>
+          <div class="hero-card-title">National ID card</div>
+          <div class="hero-card-meta">Kilimani · 1 day ago</div>
+        </div>
+        <span class="badge-sm badge-match">Match found</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-num">1,240</div><div class="stat-label">Items posted</div></div>
+    <div class="stat"><div class="stat-num">438</div><div class="stat-label">Items reunited</div></div>
+    <div class="stat"><div class="stat-num">35%</div><div class="stat-label">Return rate</div></div>
+    <div class="stat"><div class="stat-num">12</div><div class="stat-label">Nairobi areas covered</div></div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-section">
+    <h2>Browse listings</h2>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#8a8a82" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#8a8a82" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="search-input" placeholder="Search by item, keyword..." oninput="filterListings()" />
+      <select id="search-cat" onchange="filterListings()">
+        <option value="">All categories</option>
+        <option value="phone">Phone / tablet</option>
+        <option value="wallet">Wallet / purse</option>
+        <option value="keys">Keys</option>
+        <option value="id">ID / documents</option>
+        <option value="bag">Bag / luggage</option>
+      </select>
+      <button class="search-btn" onclick="filterListings()">Search</button>
+    </div>
+    <div class="filter-chips">
+      <button class="chip on" onclick="filterType('all', this)">All items</button>
+      <button class="chip" onclick="filterType('lost', this)">Lost only</button>
+      <button class="chip" onclick="filterType('found', this)">Found only</button>
+      <button class="chip" onclick="filterArea('Westlands', this)">Westlands</button>
+      <button class="chip" onclick="filterArea('CBD', this)">CBD</button>
+      <button class="chip" onclick="filterArea('Kilimani', this)">Kilimani</button>
+      <button class="chip" onclick="filterArea('Kasarani', this)">Kasarani</button>
+    </div>
+  </div>
+
+  <!-- Listings -->
+  <div class="listings-section">
+    <div class="listings-grid" id="listings-grid"></div>
+  </div>
+
+  <!-- How it works -->
+  <section class="how-section">
+    <div class="how-inner">
+      <h2>How Handback works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Post your item</h3>
+          <p>Add a photo, description, and location. It takes less than 2 minutes and it is completely free.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Get matched</h3>
+          <p>We alert you when a matching item is reported nearby. Our system compares descriptions automatically.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Reconnect safely</h3>
+          <p>Message the finder or loser anonymously through Handback. Meet in a public place to hand over the item.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     REPORT PAGE
+══════════════════════════════════════════ -->
+<div id="page-report" class="page">
+  <div class="form-page" id="report-form-wrap">
+    <h1>Report an item</h1>
+    <p class="form-sub">Fill in the details below. The more information you add, the better your chances of a reunion.</p>
+
+    <div class="type-toggle">
+      <div class="type-btn on" id="type-lost" onclick="selectType('lost')">
+        <div class="type-icon">😟</div>
+        <div class="type-label">I lost something</div>
+        <div class="type-sub">Report an item you have lost</div>
+      </div>
+      <div class="type-btn" id="type-found" onclick="selectType('found')">
+        <div class="type-icon">🙌</div>
+        <div class="type-label">I found something</div>
+        <div class="type-sub">Report an item you have found</div>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="prog done"></div>
+      <div class="prog current"></div>
+      <div class="prog"></div>
+    </div>
+
+    <div class="tip-box">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="7" stroke="#1D9E75" stroke-width="1.2"/><path d="M8 7v4M8 5v.5" stroke="#1D9E75" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <p>Items with a photo are 3× more likely to be returned. Add one if you can — even a similar image helps.</p>
+    </div>
+
+    <div class="field">
+      <label>Item category <span class="req">*</span></label>
+      <select>
+        <option value="">Select a category...</option>
+        <option>Phone / tablet</option>
+        <option>Wallet / purse</option>
+        <option>Keys</option>
+        <option>ID / documents</option>
+        <option>Bag / luggage</option>
+        <option>Jewellery / watch</option>
+        <option>Clothing</option>
+        <option>Electronics</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Item name <span class="req">*</span></label>
+      <input type="text" placeholder="e.g. Black Samsung Galaxy S23, brown leather wallet" />
+      <div class="field-hint">Be specific — include brand, colour, and model if you know it.</div>
+    </div>
+
+    <div class="field">
+      <label>Description <span class="req">*</span></label>
+      <textarea placeholder="Describe the item in detail — any markings, stickers, scratches, or unique features that would help identify it..."></textarea>
+    </div>
+
+    <div class="field-row">
+      <div class="field" style="margin-bottom:0">
+        <label>Date <span class="req">*</span></label>
+        <input type="date" />
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Approximate time</label>
+        <input type="text" placeholder="e.g. 2pm – 4pm" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Location <span class="req">*</span></label>
+      <input type="text" placeholder="e.g. Westlands Bus Stop, Sarit Centre, Nairobi CBD" />
+      <div class="field-hint">Be as specific as possible — street, building, or landmark.</div>
+    </div>
+
+    <div class="field">
+      <label>Photo</label>
+      <div class="upload-area">
+        <div style="font-size:28px;margin-bottom:6px">📷</div>
+        <p>Tap to upload a photo</p>
+        <span>JPG or PNG · Max 5MB · Up to 3 photos</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>How should people contact you? <span class="req">*</span></label>
+      <div class="contact-opts">
+        <div class="contact-opt on" onclick="selectContact(this)">Via Handback (anonymous)</div>
+        <div class="contact-opt" onclick="selectContact(this)">WhatsApp number</div>
+        <div class="contact-opt" onclick="selectContact(this)">Email</div>
+      </div>
+      <div class="field-hint">We recommend anonymous contact to keep your personal info private.</div>
+    </div>
+
+    <div class="field">
+      <label>Your name <span class="req">*</span></label>
+      <input type="text" placeholder="First name only is fine" />
+    </div>
+
+    <div class="reward-row">
+      <div class="toggle-wrap" id="reward-toggle" onclick="this.classList.toggle('on')">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="reward-label">I am offering a reward for the return of this item</span>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-back" onclick="showPage('home')">← Cancel</button>
+      <button class="btn-submit" onclick="submitForm()">Submit listing →</button>
+    </div>
+  </div>
+
+  <!-- Success State -->
+  <div class="success-screen" id="report-success" style="display:none">
+    <div class="success-icon-wrap">✓</div>
+    <h2>Listing posted!</h2>
+    <p>Your item has been listed on Handback. We will notify you by email if a match is found nearby. Your listing will stay active for 90 days.</p>
+    <button class="btn-primary" onclick="showPage('home')">Browse all listings</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     ABOUT PAGE
+══════════════════════════════════════════ -->
+<div id="page-about" class="page">
+  <div class="about-page">
+    <div class="about-hero">
+      <h1>We believe lost things<br>deserve to be <em>found</em></h1>
+      <p>Handback started with a simple observation: losing something important is devastating — and yet most lost items end up unclaimed, not because no one found them, but because finder and loser had no way to connect.</p>
+    </div>
+
+    <div class="about-story">
+      <h2>Our story</h2>
+      <p>The idea for Handback came from a real experience. A close friend lost all his personal belongings — his phone, his wallet, his ID. The experience was distressing not just because of the financial loss, but because of the helplessness. There was nowhere to go, no system to check, no way to find out if someone had picked up what he had lost.</p>
+      <p>That moment planted a question: why does this have to be so hard? In a city as connected as Nairobi — where almost everyone has a phone — why is there no simple platform for lost and found?</p>
+      <p>Handback is our answer. A free, simple, community-powered platform where finders and losers can find each other, communicate safely, and reunite people with the things that matter to them.</p>
+    </div>
+
+    <div class="about-values">
+      <div class="value-card">
+        <div class="value-icon">🤝</div>
+        <h3>Community first</h3>
+        <p>Handback works because people choose to do the right thing. We build tools that make it easy to be a good neighbour.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔒</div>
+        <h3>Privacy and safety</h3>
+        <p>You should never have to share your phone number with a stranger. Anonymous messaging keeps everyone safe.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">💚</div>
+        <h3>Always free</h3>
+        <p>Reuniting people with their belongings should never cost money. Handback is free to use for everyone, always.</p>
+      </div>
+    </div>
+
+    <div class="about-story">
+      <h2>Our mission</h2>
+      <p>To build the most trusted lost and found platform in Kenya — and eventually across Africa — so that no one ever has to feel the helplessness of losing something important with nowhere to turn.</p>
+      <p>Every item returned is a small victory. Every reunion matters.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PRIVACY PAGE
+══════════════════════════════════════════ -->
+<div id="page-privacy" class="page">
+  <div class="legal-page">
+    <h1>Privacy policy</h1>
+    <div class="legal-meta">Last updated: March 2026 · handback.co</div>
+    <div class="legal-intro">We want you to understand exactly what we do with your information — in simple, clear language. This page explains what data we collect, why we collect it, and how we keep it safe. If you have any questions, you can always contact us directly.</div>
+
+    <div class="legal-section">
+      <h2>1. Who we are</h2>
+      <p>Handback is a free platform that helps people report lost and found items and connect with each other to get belongings returned. We are based in Nairobi, Kenya.</p>
+    </div>
+    <div class="legal-section">
+      <h2>2. What information we collect</h2>
+      <p>When you use Handback, we may collect:</p>
+      <ul class="legal-list">
+        <li>Your name (first name only is fine) when you post a listing</li>
+        <li>Your contact details — phone number or email — only if you choose to share them</li>
+        <li>Photos and descriptions of the item you are reporting</li>
+        <li>The location where an item was lost or found</li>
+        <li>Messages you send to other users through our platform</li>
+        <li>Basic technical information like your device type and the browser you use</li>
+      </ul>
+      <div class="legal-highlight"><p>We never ask for your ID number, bank details, or any sensitive personal documents. If anyone claiming to be Handback asks for these, please report it to us immediately.</p></div>
+    </div>
+    <div class="legal-section">
+      <h2>3. Why we collect this information</h2>
+      <p>We only collect information that helps us run the platform:</p>
+      <ul class="legal-list">
+        <li>Your name — so other users know who posted a listing</li>
+        <li>Your contact details — so a finder or loser can reach you when there is a match</li>
+        <li>Item photos and description — so people can identify their belongings</li>
+        <li>Location — so listings appear in the right area searches</li>
+        <li>Messages — so you can communicate safely through our platform</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h2>4. Who can see your information</h2>
+      <p>Your listings — including the item description, photo, and general location — are visible to everyone who visits Handback. Your phone number or email is only shared if you choose the WhatsApp or email contact option.</p>
+      <div class="legal-highlight"><p>We recommend using anonymous messaging to keep your personal contact details private until you feel comfortable sharing them.</p></div>
+    </div>
+    <div class="legal-section">
+      <h2>5. We do not sell your data</h2>
+      <p>We do not sell, rent, or trade your personal information to any third party — ever. Your data is used only to help reunite people with their belongings.</p>
+    </div>
+    <div class="legal-section">
+      <h2>6. How we keep your data safe</h2>
+      <p>We use secure servers and encrypted connections to protect your information. No system is 100% secure — please use a strong password and do not share your account details with anyone.</p>
+    </div>
+    <div class="legal-section">
+      <h2>7. How long we keep your data</h2>
+      <p>Your listing stays active for 90 days and is then automatically removed. You can delete your listing at any time from your account.</p>
+    </div>
+    <div class="legal-section">
+      <h2>8. Your rights</h2>
+      <p>You have the right to ask us what information we hold about you, correct any wrong information, or ask us to delete your data at any time.</p>
+    </div>
+    <div class="legal-section">
+      <h2>9. Changes to this policy</h2>
+      <p>If we make important changes, we will post a notice on the website. The date at the top always shows when it was last updated.</p>
+    </div>
+    <div class="legal-contact">
+      <p><strong>Questions about your privacy?</strong></p>
+      <p>Email us at <a href="mailto:privacy@handback.co">privacy@handback.co</a> — we respond within 2 business days.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TERMS PAGE
+══════════════════════════════════════════ -->
+<div id="page-terms" class="page">
+  <div class="legal-page">
+    <h1>Terms of use</h1>
+    <div class="legal-meta">Last updated: March 2026 · handback.co</div>
+    <div class="legal-intro">These are the rules for using Handback, written in plain language so they are easy to understand. By using this website, you agree to follow these rules.</div>
+
+    <div class="legal-section">
+      <h2>1. What Handback is</h2>
+      <p>Handback is a free community platform where people can post lost and found items and connect with each other. We help make the connection — but we are not responsible for what happens between users once they are in contact.</p>
+    </div>
+    <div class="legal-section">
+      <h2>2. Who can use Handback</h2>
+      <p>Anyone can use Handback for free. You must be at least 16 years old to create a listing or send messages. If you are younger, please ask a parent or guardian to help you.</p>
+    </div>
+    <div class="legal-section">
+      <h2>3. What you are allowed to post</h2>
+      <p>You may only post listings for genuinely lost or found items. Each listing must be honest and accurate.</p>
+      <div class="legal-highlight"><p>Good listings help everyone. Please include a clear description, an accurate location, and a photo if you have one.</p></div>
+    </div>
+    <div class="legal-section">
+      <h2>4. What you are not allowed to do</h2>
+      <ul class="legal-list">
+        <li>Post fake listings to scam or mislead people</li>
+        <li>Claim an item that does not belong to you</li>
+        <li>Ask for money or mobile money in exchange for returning an item</li>
+        <li>Post items that are illegal to own</li>
+        <li>Harass, threaten, or abuse other users</li>
+        <li>Use the platform to advertise products or services</li>
+        <li>Create multiple accounts to misuse the platform</li>
+      </ul>
+      <div class="legal-warn"><p>Demanding payment to return someone's belongings is considered extortion and may be reported to the police. Handback will cooperate fully with any investigation.</p></div>
+    </div>
+    <div class="legal-section">
+      <h2>5. Rewards</h2>
+      <p>You may offer a reward — this is your choice. Handback does not handle or guarantee any reward. Any reward agreement is strictly between the two users involved.</p>
+    </div>
+    <div class="legal-section">
+      <h2>6. Meeting in person</h2>
+      <ul class="legal-list">
+        <li>Meet in a busy public place — a shopping mall, petrol station, or bank entrance</li>
+        <li>Tell someone you trust where you are going</li>
+        <li>Do not go alone if you feel unsure</li>
+        <li>Verify the item belongs to the person before handing it over</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h2>7. Our responsibility</h2>
+      <p>Handback provides the platform — we do not verify the identity of users or guarantee that any item will be returned. We are not responsible for any loss or dispute between users.</p>
+    </div>
+    <div class="legal-section">
+      <h2>8. Governing law</h2>
+      <p>These terms are governed by the laws of Kenya.</p>
+    </div>
+    <div class="legal-contact">
+      <p><strong>Questions about these terms?</strong></p>
+      <p>Email us at <a href="mailto:legal@handback.co">legal@handback.co</a> — we respond within 2 business days.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">handback</div>
+  <div class="footer-links">
+    <a href="#" onclick="showPage('about')">About</a>
+    <a href="#" onclick="showPage('privacy')">Privacy</a>
+    <a href="#" onclick="showPage('terms')">Terms</a>
+    <a href="mailto:hello@handback.co">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 Handback · Nairobi, Kenya</div>
+</footer>
+
+<!-- ITEM DETAIL MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-main">
+      <div class="modal-close"><button class="close-btn" onclick="document.getElementById('modal').classList.remove('open')">✕</button></div>
+      <div class="modal-img" id="modal-img">👜</div>
+      <div class="listing-badges" style="margin-bottom:8px" id="modal-badges"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-posted" id="modal-posted"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="detail-grid">
+        <div class="detail-cell"><div class="detail-cell-label">Category</div><div class="detail-cell-val" id="modal-cat"></div></div>
+        <div class="detail-cell"><div class="detail-cell-label">Date</div><div class="detail-cell-val" id="modal-date"></div></div>
+        <div class="detail-cell"><div class="detail-cell-label">Location</div><div class="detail-cell-val" id="modal-loc"></div></div>
+        <div class="detail-cell"><div class="detail-cell-label">Status</div><div class="detail-cell-val" id="modal-status"></div></div>
+      </div>
+    </div>
+    <div class="modal-sidebar">
+      <div id="contact-form-wrap">
+        <div class="modal-contact-header">
+          <h3 id="modal-cta-title">Think this is yours?</h3>
+          <p id="modal-cta-sub">Send an anonymous message</p>
+        </div>
+        <div class="modal-contact-body">
+          <div class="poster-row">
+            <div class="poster-av" id="modal-av">JM</div>
+            <div>
+              <div class="poster-name" id="modal-poster">James M.</div>
+              <div class="poster-tag">Member since 2026</div>
+            </div>
+          </div>
+          <textarea class="msg-box" id="modal-msg" placeholder="Describe the item contents or any identifying details to verify it is yours..."></textarea>
+          <button class="btn-send" onclick="sendModalMsg()">Send message →</button>
+        </div>
+        <div class="safety-tips">
+          <p>Safety tips</p>
+          <ul>
+            <li>Meet in a public place</li>
+            <li>Describe contents before meeting</li>
+            <li>Never send money in advance</li>
+            <li>Report suspicious behaviour</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sent-confirm" id="sent-confirm">
+        <div style="font-size:32px;margin-bottom:10px">✓</div>
+        <h3>Message sent!</h3>
+        <p>The poster will be notified. We will email you when they reply.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const listings = [
+    { id:1, type:'found', icon:'👜', bg:'#E1F5EE', title:'Brown leather wallet', desc:'Found near the entrance of Sarit Centre. Contains several cards. Currently with the security desk.', cat:'Wallet / purse', date:'30 Mar 2026', loc:'Westlands', area:'Westlands', time:'2 hrs ago', poster:'James M.', av:'JM', matched:true },
+    { id:2, type:'lost', icon:'📱', bg:'#FCEBEB', title:'Samsung Galaxy S23 — black', desc:'Lost on a matatu from CBD to Westlands around 5pm. Screen has a small crack on the corner.', cat:'Phone / tablet', date:'29 Mar 2026', loc:'CBD → Westlands', area:'CBD', time:'5 hrs ago', poster:'Amina K.', av:'AK', matched:false },
+    { id:3, type:'found', icon:'💼', bg:'#E1F5EE', title:'Small beige clutch purse', desc:'Found on the pavement outside Nairobi Hospital. Contains an ID card and some coins.', cat:'Wallet / purse', date:'29 Mar 2026', loc:'Upper Hill', area:'Kilimani', time:'1 day ago', poster:'Brian O.', av:'BO', matched:false },
+    { id:4, type:'lost', icon:'🪪', bg:'#FCEBEB', title:'National ID card — urgent', desc:'Lost my national ID card somewhere in Kilimani. Very urgent — needed for work. Please help.', cat:'ID / documents', date:'28 Mar 2026', loc:'Kilimani', area:'Kilimani', time:'1 day ago', poster:'Grace W.', av:'GW', matched:false },
+    { id:5, type:'found', icon:'🔑', bg:'#E1F5EE', title:'Set of keys — 4 keys on ring', desc:'Found at KBS bus stage on Moi Avenue. Has a blue keyring and what looks like a car key.', cat:'Keys', date:'28 Mar 2026', loc:'CBD', area:'CBD', time:'2 days ago', poster:'David M.', av:'DM', matched:false },
+    { id:6, type:'lost', icon:'🎒', bg:'#FCEBEB', title:'Blue school backpack', desc:'Left on a matatu from Kasarani to town. Has my laptop and school books inside. Offering reward.', cat:'Bag / luggage', date:'27 Mar 2026', loc:'Kasarani', area:'Kasarani', time:'3 days ago', poster:'Peter N.', av:'PN', matched:false },
+    { id:7, type:'found', icon:'💳', bg:'#E1F5EE', title:'Wallet with bank cards', desc:'Found at Westgate Mall food court. Cards still inside. Please describe the contents to claim.', cat:'Wallet / purse', date:'27 Mar 2026', loc:'Westlands', area:'Westlands', time:'3 days ago', poster:'Sarah L.', av:'SL', matched:false },
+    { id:8, type:'lost', icon:'⌚', bg:'#FCEBEB', title:'Silver wristwatch — Casio', desc:'Lost during a run in Uhuru Park. Has my initials engraved on the back: E.O.', cat:'Jewellery / watch', date:'26 Mar 2026', loc:'CBD', area:'CBD', time:'4 days ago', poster:'Elijah O.', av:'EO', matched:false },
+    { id:9, type:'found', icon:'📓', bg:'#E1F5EE', title:'Notebook and documents', desc:'Found in a matatu — looks like school or work documents. Has handwritten notes inside.', cat:'ID / documents', date:'26 Mar 2026', loc:'Kasarani', area:'Kasarani', time:'4 days ago', poster:'Faith C.', av:'FC', matched:false },
+  ];
+
+  let activeType = 'all';
+  let activeArea = null;
+
+  function renderListings(items) {
+    const grid = document.getElementById('listings-grid');
+    if (items.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--ink-faint)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:16px;font-weight:500;color:var(--ink);margin-bottom:6px">No listings found</div><div style="font-size:14px">Try a different search or check back soon — new items are posted daily.</div></div>';
+      return;
+    }
+    grid.innerHTML = items.map(l => `
+      <div class="listing-card ${l.matched ? 'matched' : ''}" onclick="openModal(${l.id})">
+        <div class="listing-img" style="background:${l.bg}">${l.icon}</div>
+        <div class="listing-body">
+          <div class="listing-badges">
+            <span class="badge-sm ${l.type === 'lost' ? 'badge-lost' : 'badge-found'}">${l.type === 'lost' ? 'Lost' : 'Found'}</span>
+            ${l.matched ? '<span class="badge-sm badge-match">Possible match</span>' : ''}
+          </div>
+          <div class="listing-title">${l.title}</div>
+          <div class="listing-desc">${l.desc}</div>
+          <div class="listing-footer">
+            <div class="listing-meta">📍 ${l.loc} · ${l.time}</div>
+            <button class="listing-cta">${l.type === 'found' ? 'I own this' : 'Contact'}</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function filterListings() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const cat = document.getElementById('search-cat').value;
+    let items = listings.filter(l => {
+      const matchQ = !q || l.title.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q) || l.loc.toLowerCase().includes(q);
+      const matchCat = !cat || l.cat.toLowerCase().includes(cat.toLowerCase());
+      const matchType = activeType === 'all' || l.type === activeType;
+      const matchArea = !activeArea || l.area === activeArea;
+      return matchQ && matchCat && matchType && matchArea;
+    });
+    renderListings(items);
+  }
+
+  function filterType(type, el) {
+    activeType = type;
+    document.querySelectorAll('.filter-chips .chip').forEach(c => {
+      if (['All items','Lost only','Found only'].includes(c.textContent)) c.classList.remove('on');
+    });
+    el.classList.add('on');
+    filterListings();
+  }
+
+  function filterArea(area, el) {
+    if (activeArea === area) { activeArea = null; el.classList.remove('on'); }
+    else {
+      activeArea = area;
+      document.querySelectorAll('.filter-chips .chip').forEach(c => {
+        if (!['All items','Lost only','Found only'].includes(c.textContent)) c.classList.remove('on');
+      });
+      el.classList.add('on');
+    }
+    filterListings();
+  }
+
+  function openModal(id) {
+    const l = listings.find(x => x.id === id);
+    if (!l) return;
+    document.getElementById('modal-img').textContent = l.icon;
+    document.getElementById('modal-img').style.background = l.bg;
+    document.getElementById('modal-badges').innerHTML = `<span class="badge-sm ${l.type==='lost'?'badge-lost':'badge-found'}">${l.type==='lost'?'Lost':'Found'}</span>${l.matched?'<span class="badge-sm badge-match" style="margin-left:6px">Possible match</span>':''}`;
+    document.getElementById('modal-title').textContent = l.title;
+    document.getElementById('modal-posted').textContent = `Posted ${l.time} · Listing #HB-0040${l.id}`;
+    document.getElementById('modal-desc').textContent = l.desc;
+    document.getElementById('modal-cat').textContent = l.cat;
+    document.getElementById('modal-date').textContent = l.date;
+    document.getElementById('modal-loc').textContent = l.loc;
+    document.getElementById('modal-status').textContent = l.type === 'lost' ? 'Still missing' : 'Awaiting owner';
+    document.getElementById('modal-av').textContent = l.av;
+    document.getElementById('modal-poster').textContent = l.poster;
+    document.getElementById('modal-cta-title').textContent = l.type === 'found' ? 'Think this is yours?' : 'Found something similar?';
+    document.getElementById('modal-cta-sub').textContent = l.type === 'found' ? 'Send an anonymous message to the finder' : 'Send a message to the person who lost it';
+    document.getElementById('modal-msg').value = '';
+    document.getElementById('contact-form-wrap').style.display = 'block';
+    document.getElementById('sent-confirm').classList.remove('show');
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
+  }
+
+  function sendModalMsg() {
+    const msg = document.getElementById('modal-msg').value.trim();
+    if (!msg) { document.getElementById('modal-msg').style.borderColor = 'var(--red)'; return; }
+    document.getElementById('contact-form-wrap').style.display = 'none';
+    document.getElementById('sent-confirm').classList.add('show');
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function selectType(type) {
+    document.getElementById('type-lost').classList.toggle('on', type === 'lost');
+    document.getElementById('type-found').classList.toggle('on', type === 'found');
+  }
+
+  function selectContact(el) {
+    document.querySelectorAll('.contact-opt').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+  }
+
+  function submitForm() {
+    document.getElementById('report-form-wrap').style.display = 'none';
+    document.getElementById('report-success').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  renderListings(listings);
+</script>
+</body>
+</html>
